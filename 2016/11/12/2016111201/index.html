@@ -1,0 +1,485 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>安卓下js拉起APP以及apktool反编译工具介绍 | xiangfengw&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xiangfengw">
+    
+
+    
+    <meta name="description" content="相信大家都知道在移动浏览器中要打开某个app是需要调用scheme协议进行的。一般都是由前端以及app客户端开发人员进行协议协商。而像微信、支付宝等也会放出一些公用的协议，让第三方开发者能够拉起他们的app。 那么，如果是一个不是自己开发的，小众的Android APP，要怎么知道其协议并且成功拉起该APP呢？ 下面就要介绍下apktool反编译工具，先看官方说明  APKTool是GOOGLE提">
+<meta name="keywords" content="js  openapp apktool">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓下js拉起APP以及apktool反编译工具介绍">
+<meta property="og:url" content="http://powa2005.github.io/2016/11/12/2016111201/index.html">
+<meta property="og:site_name" content="xiangfengw&#39;s blog">
+<meta property="og:description" content="相信大家都知道在移动浏览器中要打开某个app是需要调用scheme协议进行的。一般都是由前端以及app客户端开发人员进行协议协商。而像微信、支付宝等也会放出一些公用的协议，让第三方开发者能够拉起他们的app。 那么，如果是一个不是自己开发的，小众的Android APP，要怎么知道其协议并且成功拉起该APP呢？ 下面就要介绍下apktool反编译工具，先看官方说明  APKTool是GOOGLE提">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-08-07T01:57:52.403Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安卓下js拉起APP以及apktool反编译工具介绍">
+<meta name="twitter:description" content="相信大家都知道在移动浏览器中要打开某个app是需要调用scheme协议进行的。一般都是由前端以及app客户端开发人员进行协议协商。而像微信、支付宝等也会放出一些公用的协议，让第三方开发者能够拉起他们的app。 那么，如果是一个不是自己开发的，小众的Android APP，要怎么知道其协议并且成功拉起该APP呢？ 下面就要介绍下apktool反编译工具，先看官方说明  APKTool是GOOGLE提">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xiangfengw&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xiangfengw&#39;s blog" title="xiangfengw&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xiangfengw&#39;s blog">xiangfengw&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:powa2005.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/12/2016111201/" title="安卓下js拉起APP以及apktool反编译工具介绍" itemprop="url">安卓下js拉起APP以及apktool反编译工具介绍</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xiangfengw" target="_blank" itemprop="author">xiangfengw</a>
+		
+  <p class="article-time">
+    <time datetime="2016-11-12T03:19:32.000Z" itemprop="datePublished">  2016-11-12</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#end"><span class="toc-number">1.</span> <span class="toc-text">end</span></a></li></ol>
+		
+		</div>
+		
+		<p>相信大家都知道在移动浏览器中要打开某个app是需要调用scheme协议进行的。一般都是由前端以及app客户端开发人员进行协议协商。而像微信、支付宝等也会放出一些公用的协议，让第三方开发者能够拉起他们的app。</p>
+<p>那么，如果是一个不是自己开发的，小众的Android APP，要怎么知道其协议并且成功拉起该APP呢？</p>
+<p>下面就要介绍下apktool反编译工具，先看官方说明</p>
+<blockquote>
+<p>APKTool是GOOGLE提供的APK编译工具，能够反编译及回编译apk，同时安装反编译系统apk所需要的framework-res框架，清理上次反编译文件夹等功能。需要java支持</p>
+</blockquote>
+<p>具体如何操作？</p>
+<p>1、下载apktool工具，并确保已有java环境。<br>2、终端下进入apktool目录下执行：apktool d -f [apkPath] -o [folderPath]  &nbsp; &nbsp;  //[apkPath]为需要反编译的apk文件路径；[folderPath]为反编译出来的文件保存路径<br>3、进入反编译好的文件夹，可以看到有个AndroidManifest.xml文件，这就是我们此次的目的所在</p>
+<p>拿到AndroidManifest.xml有何用？</p>
+<p>AndroidManifest.xml文件中定义app各个视图的基本属性已经相互跳转的协议，这些协议也可以用来给js进行调用</p>
+<p>所以我们需要调用一个app里的页面，就需要AndroidManifest.xml中找到对应的协议</p>
+<p>这是一个AndroidManifest.xml的样式代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;intent-filter&gt;  </span><br><span class="line">      &lt;action android:name=&quot;android.intent.action.VIEW&quot;&gt;&lt;/action&gt;    </span><br><span class="line">      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;&gt;&lt;/category&gt;  </span><br><span class="line">      &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot;&gt;&lt;/category&gt;     </span><br><span class="line">      &lt;data  </span><br><span class="line">           android:scheme=&quot;app&quot;  </span><br><span class="line">           android:host=&quot;test&quot;&gt;  </span><br><span class="line">      &lt;/data&gt;    </span><br><span class="line">&lt;/intent-filter&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如果需要配置能被js调起，一定要配置下面这句<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;category android:name=&quot;android.intent.category.BROWSABLE&quot;&gt;&lt;/category&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其中data配置的属性：</p>
+<p>android:scheme=”app”表示配置接受的协议为app，相当于http: //<a href="http://www.baidu.com中的http或者https" target="_blank" rel="noopener">www.baidu.com中的http或者https</a><br>android:host=”test”表示配置接受的域名为test，相当于http: //<a href="http://www.baidu.com中的www.baidu.com" target="_blank" rel="noopener">www.baidu.com中的www.baidu.com</a>  </p>
+<p>所以我们在js中调用的时候就是这样的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">window.open(&apos;app://test&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>如果没有android:host配置，那么就可以这么调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">window.open(&apos;app://&apos;)</span><br></pre></td></tr></table></figure></p>
+<p>很简单有木有</p>
+<h2 id="end"><a href="#end" class="headerlink" title="end"></a>end</h2>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/js-openapp-apktool/">js  openapp apktool</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://powa2005.github.io/2016/11/12/2016111201/" data-title="安卓下js拉起APP以及apktool反编译工具介绍 | xiangfengw&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2017/09/09/Git-常用的操作/" title="Git 常用的操作">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Git 常用的操作</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/11/11/20161111/"  title="关于性能优化的一些总结">
+ <strong>下一篇：</strong><br/> 
+ <span>关于性能优化的一些总结
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#end"><span class="toc-number">1.</span> <span class="toc-text">end</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/nodejs-express-bing-img/" title="nodejs express bing img">nodejs express bing img<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/性能优化/" title="性能优化">性能优化<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-openapp-apktool/" title="js  openapp apktool">js  openapp apktool<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-string-json/" title="js,string,json">js,string,json<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nginx/" title="nginx">nginx<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-nw/" title="js,nw">js,nw<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.xiangfengw.com" target="_blank" title="Xiangfengw">Xiangfengw</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello ,this is xiangfengw&#39;s blog. <br/>
+			Nothing special.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="xiangfengw">xiangfengw</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

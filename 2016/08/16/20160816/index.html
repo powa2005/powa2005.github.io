@@ -1,0 +1,513 @@
+
+ <!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  
+    <title>获取bing网站每日背景图片 | xiangfengw&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="xiangfengw">
+    
+
+    
+    <meta name="description" content="前言微软的Bing搜索网站有一大亮点就是背景图片，每天一换，还是1080p的高清大图 不知道你有没有试过将好看的图片保存下来当背景，反正我是干过 作为一名码农，这种手动保存的行为真是太low了 今天就来看看如何自动获取bing的背景图片，并应用与自己的网站背景中 bing接口首先用fiddler抓去bing的所有请求，发现其中一条就是关于背景图片的接口，如图  可以看到左边红色框内的/HPImag">
+<meta name="keywords" content="nodejs express bing img">
+<meta property="og:type" content="article">
+<meta property="og:title" content="获取bing网站每日背景图片">
+<meta property="og:url" content="http://powa2005.github.io/2016/08/16/20160816/index.html">
+<meta property="og:site_name" content="xiangfengw&#39;s blog">
+<meta property="og:description" content="前言微软的Bing搜索网站有一大亮点就是背景图片，每天一换，还是1080p的高清大图 不知道你有没有试过将好看的图片保存下来当背景，反正我是干过 作为一名码农，这种手动保存的行为真是太low了 今天就来看看如何自动获取bing的背景图片，并应用与自己的网站背景中 bing接口首先用fiddler抓去bing的所有请求，发现其中一条就是关于背景图片的接口，如图  可以看到左边红色框内的/HPImag">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://powa2005.github.io/2016/08/16/20160816/bing.png">
+<meta property="og:updated_time" content="2019-08-07T01:57:52.401Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="获取bing网站每日背景图片">
+<meta name="twitter:description" content="前言微软的Bing搜索网站有一大亮点就是背景图片，每天一换，还是1080p的高清大图 不知道你有没有试过将好看的图片保存下来当背景，反正我是干过 作为一名码农，这种手动保存的行为真是太low了 今天就来看看如何自动获取bing的背景图片，并应用与自己的网站背景中 bing接口首先用fiddler抓去bing的所有请求，发现其中一条就是关于背景图片的接口，如图  可以看到左边红色框内的/HPImag">
+<meta name="twitter:image" content="http://powa2005.github.io/2016/08/16/20160816/bing.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="xiangfengw&#39;s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="xiangfengw&#39;s blog" title="xiangfengw&#39;s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="xiangfengw&#39;s blog">xiangfengw&#39;s blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:powa2005.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/08/16/20160816/" title="获取bing网站每日背景图片" itemprop="url">获取bing网站每日背景图片</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="xiangfengw" target="_blank" itemprop="author">xiangfengw</a>
+		
+  <p class="article-time">
+    <time datetime="2016-08-16T13:56:08.000Z" itemprop="datePublished">  2016-08-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bing接口"><span class="toc-number">2.</span> <span class="toc-text">bing接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片"><span class="toc-number">2.1.</span> <span class="toc-text">关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#系统搭建-nodejs-express-request"><span class="toc-number">3.</span> <span class="toc-text">系统搭建 nodejs + express + request</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束语"><span class="toc-number">4.</span> <span class="toc-text">结束语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#End"><span class="toc-number">5.</span> <span class="toc-text">End</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>微软的Bing搜索网站有一大亮点就是背景图片，每天一换，还是1080p的高清大图</p>
+<p>不知道你有没有试过将好看的图片保存下来当背景，反正我是干过</p>
+<p>作为一名码农，这种手动保存的行为真是太low了</p>
+<p>今天就来看看如何自动获取bing的背景图片，并应用与自己的网站背景中</p>
+<h2 id="bing接口"><a href="#bing接口" class="headerlink" title="bing接口"></a>bing接口</h2><p><em>首先用fiddler抓去bing的所有请求，发现其中一条就是关于背景图片的接口，如图</em></p>
+<p><img src="/2016/08/16/20160816/bing.png" alt="bing"></p>
+<p>可以看到左边红色框内的/HPImageArchive.aspx就是获取图片的接口，其完整url为</p>
+<blockquote>
+<p><a href="http://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&amp;nc=1471355990897&amp;pid=hp" target="_blank" rel="noopener">http://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&amp;nc=1471355990897&amp;pid=hp</a></p>
+</blockquote>
+<p>研究表明url后面的参数只有format、idx、n是有意义的，分别是</p>
+<ol>
+<li>1、format    非必要  我理解为输出格式，不存在或者不等于js，即为xml格式，等于js时，输出json格式；</li>
+<li>2、idx        非必要  不存在或者等于0时，输出当天的图片，-1为已经预备用于明天显示的信息，1则为昨天的图片，idx最多获取到前16天的图片信息；</li>
+<li>3、n            必要    这是输出信息的数量，比如n=1，即为1条，以此类推，至多输出8条；</li>
+</ol>
+<p>图片右边就是接口所返回的对象，主要有images跟tooltips两个字段</p>
+<p>images是个数组，里面包含每张图片的具体信息，数组长度取决于接口参数n的值，最大为8</p>
+<p>红色框内即为改图片的url，地址为</p>
+<blockquote>
+<p><a href="http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1920x1080.jpg" target="_blank" rel="noopener">http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1920x1080.jpg</a></p>
+</blockquote>
+<p>可以发现url后面有个_1920x1080字符串</p>
+<p>没错，这就是图片请求的尺寸，可以手动对url进行修改，目前发现可用的尺寸有四种，分别是1920x1080、1366x768、1024x768、480x800，对应的url</p>
+<blockquote>
+<p><a href="http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1920x1080.jpg" target="_blank" rel="noopener">http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1920x1080.jpg</a><br><a href="http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1366x768.jpg" target="_blank" rel="noopener">http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1366x768.jpg</a><br><a href="http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1024x768.jpg" target="_blank" rel="noopener">http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_1024x768.jpg</a><br><a href="http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_480x800.jpg" target="_blank" rel="noopener">http://s.cn.bing.net/az/hprichbg/rb/MariaLenkDive_ZH-CN10833846465_480x800.jpg</a></p>
+</blockquote>
+<h3 id="关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片"><a href="#关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片" class="headerlink" title="关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片"></a>关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片</h3><h2 id="系统搭建-nodejs-express-request"><a href="#系统搭建-nodejs-express-request" class="headerlink" title="系统搭建 nodejs + express + request"></a>系统搭建 nodejs + express + request</h2><p>整个demo系统源码<a href="https://github.com/powa2005/getBingBGImg" target="_blank" rel="noopener">请戳地址</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">app.get(&apos;/getBingBGImg&apos;, (req, res, next) =&gt; &#123;</span><br><span class="line">	request(&apos;http://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&apos;, (err, response, body) =&gt; &#123;</span><br><span class="line">		var obody, imgUrl;</span><br><span class="line">		obody = JSON.parse(body);</span><br><span class="line">		imgUrl = obody.images[0].url;</span><br><span class="line">		request.get(imgUrl).pipe(res);</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>整个关键代码就这样了，express自带路由模块，用request模块发起http请求，然后解析url地址并返回到页面。</p>
+<p>戳<a href="http://xiangfengw.com/xServer/api/BImg" target="_blank" rel="noopener">请戳地址：http://xiangfengw.com/xServer/api/BImg</a> 查看返回结果</p>
+<p>前面有提到过返回的图片尺寸有四种，而目前接口只返回1920x1080，所以我们得做一个解析，通过url传参数来返回不同尺寸的图片，具体代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">app.get(&apos;/getBingBGImg&apos;, (req, res, next) =&gt; &#123;</span><br><span class="line">	var w = req.query.w;</span><br><span class="line">	request(&apos;http://cn.bing.com/HPImageArchive.aspx?format=js&amp;idx=0&amp;n=1&apos;, (err, response, body) =&gt; &#123;</span><br><span class="line">		var obody, imgUrl;</span><br><span class="line">		obody = JSON.parse(body);</span><br><span class="line">		imgUrl = obody.images[0].url;</span><br><span class="line">		if(+w != 1920)&#123;</span><br><span class="line">			imgUrl = imgUrl.replace(&apos;1920x1080&apos;,getImgSize(w));</span><br><span class="line">		&#125;</span><br><span class="line">		request.get(imgUrl).pipe(res)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">var getImgSize = w =&gt;&#123;</span><br><span class="line">	switch(+w)&#123;</span><br><span class="line">		case 480:</span><br><span class="line">			return &quot;480x800&quot;;</span><br><span class="line">			break;</span><br><span class="line">		case 1024:</span><br><span class="line">			return &quot;1024x768&quot;;</span><br><span class="line">			break;</span><br><span class="line">		case 1366:</span><br><span class="line">			return &quot;1366x768&quot;;</span><br><span class="line">			break;</span><br><span class="line">		default: </span><br><span class="line">			return &quot;1366x768&quot;;</span><br><span class="line">			break;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到我在原来的代码基础上做了些许改动，在/getBingBGImg中通过req获取url参数w</p>
+<p>增加getImgSize方法，根据w的不同返回不同尺寸，然后替换原来url的尺寸字符串，整个接口就大功告成了</p>
+<p>可以点击试试看</p>
+<blockquote>
+<p><a href="http://xiangfengw.com/xServer/api/BImg?w=1920" target="_blank" rel="noopener">http://xiangfengw.com/xServer/api/BImg?w=1920</a><br><a href="http://xiangfengw.com/xServer/api/BImg?w=1366" target="_blank" rel="noopener">http://xiangfengw.com/xServer/api/BImg?w=1366</a><br><a href="http://xiangfengw.com/xServer/api/BImg?w=1024" target="_blank" rel="noopener">http://xiangfengw.com/xServer/api/BImg?w=1024</a><br><a href="http://xiangfengw.com/xServer/api/BImg?w=480" target="_blank" rel="noopener">http://xiangfengw.com/xServer/api/BImg?w=480</a></p>
+</blockquote>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>这只是个很简单的小玩意，可以了解下api的搭建过程，练练手，对以后的项目也会有意想不到的帮助</p>
+<p>Ps：<br>    前面分析接口的时候发现每张图片都是有起描述等详细信息的，如何优化接口获取该信息呢</p>
+<pre><code>可以通过前面提到的idx跟n参数暴露出来
+
+大家可以自由发挥~
+</code></pre><h2 id="End"><a href="#End" class="headerlink" title="End"></a>End</h2>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/nodejs-express-bing-img/">nodejs express bing img</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://powa2005.github.io/2016/08/16/20160816/" data-title="获取bing网站每日背景图片 | xiangfengw&#39;s blog" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/09/09/hello-world/" title="Hello World">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Hello World</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/08/06/jq-str2json/"  title="字符串转json对象的小技巧">
+ <strong>下一篇：</strong><br/> 
+ <span>字符串转json对象的小技巧
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bing接口"><span class="toc-number">2.</span> <span class="toc-text">bing接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片"><span class="toc-number">2.1.</span> <span class="toc-text">关于接口的研究就到此结束，接下来就是要自己封装接口去获取想要的图片</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#系统搭建-nodejs-express-request"><span class="toc-number">3.</span> <span class="toc-text">系统搭建 nodejs + express + request</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结束语"><span class="toc-number">4.</span> <span class="toc-text">结束语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#End"><span class="toc-number">5.</span> <span class="toc-text">End</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/nodejs-express-bing-img/" title="nodejs express bing img">nodejs express bing img<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/性能优化/" title="性能优化">性能优化<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-openapp-apktool/" title="js  openapp apktool">js  openapp apktool<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/git/" title="git">git<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-string-json/" title="js,string,json">js,string,json<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/nginx/" title="nginx">nginx<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/js-nw/" title="js,nw">js,nw<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://blog.xiangfengw.com" target="_blank" title="Xiangfengw">Xiangfengw</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=null&verifier=&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<section class="info">
+		<p> Hello ,this is xiangfengw&#39;s blog. <br/>
+			Nothing special.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="xiangfengw">xiangfengw</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
